@@ -10,14 +10,14 @@ buildTree2YamlAmd64:
 	go build \
 		-ldflags="-X git.rickiekarp.net/rickie/tree2yaml/generator.Version=$(shell git rev-parse HEAD)" \
 		-o $(BUILD_PATH)/tree2yaml \
-		tree2yaml/main.go
+		main.go
 		
 buildTree2YamlARM64v7:
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 GOARM=7 \
 	go build \
 		-ldflags="-X git.rickiekarp.net/rickie/tree2yaml/generator.Version=$(shell git rev-parse HEAD)" \
 		-o $(BUILD_PATH)/tree2yaml \
-		tree2yaml/main.go
+		main.go
 
 deployTree2Yaml:
 	rsync -rlvpt --delete build/tree2yaml pi:~/tools/
