@@ -65,9 +65,7 @@ func main() {
 			for _, file := range folder.Files {
 				fmt.Println(file.Name)
 			}
-		}
-
-		if len(*flagFindFolders) > 0 {
+		} else if len(*flagFindFolders) > 0 {
 			s := strings.Split(*flagFindFolders, "/")
 			folder := extractor.FindFolder(filelist.Tree.Folders, s)
 			if folder == nil {
@@ -76,6 +74,8 @@ func main() {
 			for _, folder := range folder.Folders {
 				fmt.Println(folder.Name)
 			}
+		} else {
+			fmt.Println(filelist)
 		}
 	}
 }
