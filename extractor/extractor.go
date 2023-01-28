@@ -1,14 +1,22 @@
 package extractor
 
-import "git.rickiekarp.net/rickie/tree2yaml/model"
+import (
+	"git.rickiekarp.net/rickie/tree2yaml/model"
+)
 
-func FindFolder(slice []*model.Folder, searchPathSlice []string) *model.Folder {
+func FindFolder(fileTreeRootFolder *model.Folder, searchPathSlice []string) *model.Folder {
+
+	// return file tree root directory if no sub directories have been provided
+	if len(searchPathSlice) == 1 {
+		return fileTreeRootFolder
+	}
 
 	var foundDir *model.Folder
+	var rootFolders = fileTreeRootFolder.Folders
 
 	for _, path := range searchPathSlice {
 
-		for _, folder := range slice {
+		for _, folder := range rootFolders {
 
 			if folder.Name == path && searchPathSlice[len(searchPathSlice)-1] == folder.Name {
 				return folder
@@ -17,7 +25,7 @@ func FindFolder(slice []*model.Folder, searchPathSlice []string) *model.Folder {
 			foundDir = findSubDirectory(folder.Folders, path)
 
 			if foundDir != nil {
-				slice = folder.Folders
+				rootFolders = folder.Folders
 			}
 		}
 	}

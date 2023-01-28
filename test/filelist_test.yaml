@@ -1,14 +1,17 @@
 directory: test/rootFolder
 parserVersion: development
-size: 18
+size: 27
 tree:
   name: rootFolder
   folders:
   - name: folderA
     files:
     - name: fileA
-      size: 7
-      lastmodified: 2023-01-24T20:40:34.833211084+01:00
+      size: 8
+      lastmodified: 2023-01-28T20:58:20.126212581+01:00
+    - name: fileB
+      size: 8
+      lastmodified: 2023-01-28T20:58:09.113312672+01:00
   - name: folderB
     files:
     - name: fileB

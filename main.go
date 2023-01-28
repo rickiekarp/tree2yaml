@@ -9,6 +9,7 @@ import (
 	"git.rickiekarp.net/rickie/tree2yaml/extractor"
 	"git.rickiekarp.net/rickie/tree2yaml/generator"
 	"git.rickiekarp.net/rickie/tree2yaml/loader"
+	"git.rickiekarp.net/rickie/tree2yaml/printer"
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,8 +20,8 @@ func main() {
 	var flagCalcMd5 = flag.Bool("calcMd5", false, "calculate md5 sum of each file")
 	var flagGenerate = flag.Bool("generate", true, "generates a filelist")
 	var flagLoadList = flag.Bool("load", false, "loads an existing filelist")
-	var flagFindFiles = flag.String("findFilesIn", "", "finds files by a given search path, e.g. tree2yaml --load --findFilesIn=foo/bar /foo/bar")
-	var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml --load --findFoldersIn=foo/bar /foo/bar")
+	var flagFindFiles = flag.String("findFilesIn", "", "finds files by a given search path, e.g. tree2yaml --load --findFilesIn=foo/bar /foo/bar.yaml")
+	var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml --load --findFoldersIn=foo/bar /foo/bar.yaml")
 	var flagFilterByDate = flag.String("filterByDate", "", "filters files by given date, e.g. --filterByDate=2022-12-24")
 	var flagFilterByDateDirection = flag.String("filterByDateDirection", "new", "direction of files to be filtered, e.g. 'old', 'new'")
 
@@ -54,8 +55,8 @@ func main() {
 		filelist := loader.LoadFilelist(filePath)
 
 		if len(*flagFindFiles) > 0 {
-			s := strings.Split(*flagFindFiles, "/")
-			folder := extractor.FindFolder(filelist.Tree.Folders, s)
+			splitDirectorySlice := strings.Split(*flagFindFiles, "/")
+			folder := extractor.FindFolder(filelist.Tree, splitDirectorySlice)
 			if folder == nil {
 				os.Exit(0)
 			}
@@ -66,8 +67,8 @@ func main() {
 				fmt.Println(file.Name)
 			}
 		} else if len(*flagFindFolders) > 0 {
-			s := strings.Split(*flagFindFolders, "/")
-			folder := extractor.FindFolder(filelist.Tree.Folders, s)
+			splitDirectorySlice := strings.Split(*flagFindFolders, "/")
+			folder := extractor.FindFolder(filelist.Tree, splitDirectorySlice)
 			if folder == nil {
 				os.Exit(0)
 			}
@@ -75,7 +76,7 @@ func main() {
 				fmt.Println(folder.Name)
 			}
 		} else {
-			fmt.Println(filelist)
+			printer.PrintFilelist(filelist)
 		}
 	}
 }
