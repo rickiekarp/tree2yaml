@@ -24,3 +24,6 @@ deployTree2Yaml:
 
 clean:
 	rm -rf build
+
+tests:
+	$(GOTEST) -v ./...

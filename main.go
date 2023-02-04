@@ -24,6 +24,7 @@ func main() {
 	var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml --load --findFoldersIn=foo/bar /foo/bar.yaml")
 	var flagFilterByDate = flag.String("filterByDate", "", "filters files by given date, e.g. --filterByDate=2022-12-24")
 	var flagFilterByDateDirection = flag.String("filterByDateDirection", "new", "direction of files to be filtered, e.g. 'old', 'new'")
+	var flagMatchFiles = flag.String("find", "", "prints all file names that match the given arguments, grouped by occurrence, e.g. --find=foo,bar")
 
 	flag.Parse()
 
@@ -75,6 +76,9 @@ func main() {
 			for _, folder := range folder.Folders {
 				fmt.Println(folder.Name)
 			}
+		} else if len(*flagMatchFiles) > 0 {
+			result := extractor.MatchOccurrencesInFileTree(filelist, flagMatchFiles)
+			printer.PrintFileListWithOccurrences(result)
 		} else {
 			printer.PrintFilelist(filelist)
 		}

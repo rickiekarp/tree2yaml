@@ -33,6 +33,26 @@ folderA
 folderB
 ```
 
+### Find files and list their number of occurrences
+
+Used to find files by given parts of their file name.
+Lists all files and the probability of how many parts of the file name are found in a file name.
+
+Input:
+```
+go run main.go --find=file,A --load test/filelist_test.yaml
+```
+
+Output:
+```
+Results (Probability: 100%)
+fileA
+
+Results (Probability: 50%)
+fileB
+fileB
+```
+
 ### Filtering
 
 #### Filter by date
