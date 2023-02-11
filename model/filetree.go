@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"gopkg.in/yaml.v2"
@@ -19,6 +20,11 @@ type Folder struct {
 	Folders []*Folder `yaml:"folders,omitempty"`
 }
 
+func (f *Folder) String() string {
+	j, _ := yaml.Marshal(f)
+	return string(j)
+}
+
 type File struct {
 	Name         string
 	Size         int64
@@ -26,7 +32,6 @@ type File struct {
 	Md5          string `yaml:"md5,omitempty"`
 }
 
-func (f *Folder) String() string {
-	j, _ := yaml.Marshal(f)
-	return string(j)
+func (f *File) String() string {
+	return fmt.Sprintf("%s", f.Name)
 }

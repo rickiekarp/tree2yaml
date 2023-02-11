@@ -14,7 +14,7 @@ tree:
       lastmodified: 2023-01-28T20:58:09.113312672+01:00
   - name: folderB
     files:
-    - name: fileB
+    - name: fileC
       size: 11
       lastmodified: 2023-01-24T20:40:50.690536654+01:00
 

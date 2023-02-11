@@ -3,17 +3,20 @@ package extractor
 import (
 	"strings"
 
+	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 )
 
 var matchFileSlice []string
 var probabilityMap map[int]int
 var fileMap map[int][]model.File
+var ignoreCase bool
 
-func MatchOccurrencesInFileTree(filetree *model.FileTree, flagMatchFiles *string) map[int][]model.File {
+func MatchOccurrencesInFileTree(filetree *model.FileTree, flagMatchFiles *string, flagIgnoreCase *bool) map[int][]model.File {
 	matchFileSlice = strings.Split(*flagMatchFiles, ",")
 	probabilityMap = getOccurrenceProbabilityMap(matchFileSlice)
 	fileMap = make(map[int][]model.File)
+	ignoreCase = *flagIgnoreCase
 
 	var rootFolders = filetree.Tree.Folders
 	for _, folder := range rootFolders {
@@ -47,9 +50,17 @@ func traverseFolders(folders *model.Folder) {
 func containsFileWithOccurrences(file *model.File, matchFileSlice []string) (bool, int) {
 	occurrences := 0
 
-	for _, match := range matchFileSlice {
-		if strings.Contains(file.Name, match) {
-			occurrences++
+	if ignoreCase {
+		for _, match := range matchFileSlice {
+			if extensions.ContainsCaseInsensitive(file.Name, match) {
+				occurrences++
+			}
+		}
+	} else {
+		for _, match := range matchFileSlice {
+			if strings.Contains(file.Name, match) {
+				occurrences++
+			}
 		}
 	}
 

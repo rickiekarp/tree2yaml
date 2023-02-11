@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -10,11 +12,27 @@ import (
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
+	"gopkg.in/yaml.v2"
 )
 
 var Version = "development" // Version set during go build using ldflags
 
-func BuildTree(rootDir string, flagCalcMd5 *bool) *model.FileTree {
+var flagCalcMd5 = flag.Bool("calcMd5", false, "calculate md5 sum of each file")
+
+func Generate(filePath string) {
+	tree := buildTree(filePath, flagCalcMd5)
+
+	data, err := yaml.Marshal(&tree)
+	if err != nil {
+		fmt.Printf("Error while Marshaling. %v", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(string(data))
+	os.Exit(0)
+}
+
+func buildTree(rootDir string, flagCalcMd5 *bool) *model.FileTree {
 	rootDir = path.Clean(rootDir)
 
 	var filetree *model.FileTree = &model.FileTree{}
