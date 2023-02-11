@@ -29,6 +29,8 @@ type File struct {
 	Name         string
 	Size         int64
 	LastModified time.Time
+	Crc32        uint32 `yaml:"crc32,omitempty"`
+	Crc64        uint64 `yaml:"crc64,omitempty"`
 	Md5          string `yaml:"md5,omitempty"`
 }
 

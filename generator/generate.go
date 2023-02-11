@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
@@ -17,10 +18,10 @@ import (
 
 var Version = "development" // Version set during go build using ldflags
 
-var flagCalcMd5 = flag.Bool("calcMd5", false, "calculate md5 sum of each file")
+var flagFileHashMethod = flag.String("hash", "", "calculate hash sum of each file (crc32, crc64, md5)")
 
 func Generate(filePath string) {
-	tree := buildTree(filePath, flagCalcMd5)
+	tree := buildTree(filePath, *flagFileHashMethod)
 
 	data, err := yaml.Marshal(&tree)
 	if err != nil {
@@ -32,33 +33,37 @@ func Generate(filePath string) {
 	os.Exit(0)
 }
 
-func buildTree(rootDir string, flagCalcMd5 *bool) *model.FileTree {
+func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
 	rootDir = path.Clean(rootDir)
 
 	var filetree *model.FileTree = &model.FileTree{}
 	var tree *model.Folder
 	var nodes = map[string]interface{}{}
-	var walkFunc filepath.WalkFunc = func(p string, info os.FileInfo, err error) error {
+	var walkFunc filepath.WalkFunc = func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
-			nodes[p] = &model.Folder{
-				Name:    path.Base(p),
+			nodes[filePath] = &model.Folder{
+				Name:    path.Base(filePath),
 				Files:   []*model.File{},
 				Folders: []*model.Folder{},
 			}
 		} else {
-			var md5 = ""
-			if *flagCalcMd5 {
-				md5 = hash.CalcMd5(p)
-			}
 
 			filetree.Size += info.Size()
 
-			nodes[p] = &model.File{
-				Name:         path.Base(p),
+			var fileToAdd = &model.File{
+				Name:         path.Base(filePath),
 				Size:         info.Size(),
 				LastModified: info.ModTime(),
-				Md5:          md5,
 			}
+
+			if len(flagFileHashMethod) > 0 {
+				hashMethods := strings.Split(flagFileHashMethod, ",")
+				for _, hashMethod := range hashMethods {
+					calcHashByMethod(hashMethod, fileToAdd, filePath)
+				}
+			}
+
+			nodes[filePath] = fileToAdd
 		}
 
 		return nil
@@ -93,4 +98,18 @@ func buildTree(rootDir string, flagCalcMd5 *bool) *model.FileTree {
 	filetree.Tree = tree
 
 	return filetree
+}
+
+func calcHashByMethod(hashMethod string, file *model.File, filePath string) {
+	switch hashMethod {
+	case "crc32":
+		crc32 := hash.CalcCrc32(filePath)
+		file.Crc32 = crc32
+	case "crc64":
+		crc64 := hash.CalcCrc64(filePath)
+		file.Crc64 = crc64
+	case "md5":
+		md5 := hash.CalcMd5(filePath)
+		file.Md5 = md5
+	}
 }

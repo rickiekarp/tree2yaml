@@ -5,8 +5,6 @@ Generates a file list for a given path in yaml format
 ### Available commands
 ```
 Usage of tree2yaml:
-  -calcMd5
-    	calculate md5 sum of each file
   -filterByDate string
     	filters files by given date, e.g. -filterByDate=2022-12-24
   -filterByDateDirection string
@@ -23,6 +21,8 @@ Usage of tree2yaml:
     	check git history
   -git-depth int
     	git log depth (default 3)
+  -hash string
+    	calculate hash sum of each file (crc32, crc64, md5)
   -help
     	prints all available options
   -ignoreCase

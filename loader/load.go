@@ -12,11 +12,11 @@ import (
 	"git.rickiekarp.net/rickie/tree2yaml/printer"
 )
 
-var flagFindFiles = flag.String("findFilesIn", "", "finds files by a given search path, e.g. tree2yaml --load --findFilesIn=foo/bar /foo/bar.yaml")
-var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml --load --findFoldersIn=foo/bar /foo/bar.yaml")
-var flagMatchFiles = flag.String("find", "", "prints all file names that match the given arguments, grouped by occurrence, e.g. --find=foo,bar")
+var flagFindFiles = flag.String("findFilesIn", "", "finds files by a given search path, e.g. tree2yaml -load -findFilesIn=foo/bar /foo/bar.yaml")
+var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml -load -findFoldersIn=foo/bar /foo/bar.yaml")
+var flagMatchFiles = flag.String("find", "", "prints all file names that match the given arguments, grouped by occurrence, e.g. -find=foo,bar")
 
-var flagFilterByDate = flag.String("filterByDate", "", "filters files by given date, e.g. --filterByDate=2022-12-24")
+var flagFilterByDate = flag.String("filterByDate", "", "filters files by given date, e.g. -filterByDate=2022-12-24")
 var flagFilterByDateDirection = flag.String("filterByDateDirection", "new", "direction of files to be filtered, e.g. 'old', 'new'")
 var flagIgnoreCase = flag.Bool("ignoreCase", false, "ignore case when matching files, can be combined with -find flag")
 
@@ -45,7 +45,7 @@ func Load(filePath string) {
 				if exitCode == 0 {
 					fileList := loadFilelistFromString(fileContent)
 					var result = extractor.MatchOccurrencesInFileTree(fileList, flagMatchFiles, flagIgnoreCase)
-					results = DeepCopy(result, results)
+					results = deepCopyFileMap(result, results)
 
 				} else {
 					fmt.Println("File not found:", filePath)
@@ -68,34 +68,6 @@ func Load(filePath string) {
 		printer.PrintFilelist(filelist)
 
 	}
-}
-
-func DeepCopy(src, dst map[int][]model.File) map[int][]model.File {
-
-	var tmp = make(map[model.File]int)
-	var newMap = make(map[int][]model.File)
-
-	for srcProbability, srcFiles := range src {
-		newMap[srcProbability] = []model.File{}
-		for _, file := range srcFiles {
-			tmp[file] = srcProbability
-		}
-	}
-
-	for srcProbability, srcFiles := range dst {
-		newMap[srcProbability] = []model.File{}
-		for _, file := range srcFiles {
-			tmp[file] = srcProbability
-		}
-	}
-
-	for file, prob := range tmp {
-		var entry = newMap[prob]
-		entry = append(entry, file)
-		newMap[prob] = entry
-	}
-
-	return newMap
 }
 
 func findFiles(filePath string) {
