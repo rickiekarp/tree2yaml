@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
@@ -20,7 +21,11 @@ var Version = "development" // Version set during go build using ldflags
 
 var flagFileHashMethod = flag.String("hash", "", "calculate hash sum of each file (crc32, crc64, md5)")
 
+var flagOutFile = flag.String("outfile", "", "path of the output file")
+var flagGenerateMetadata = flag.Bool("enableMetadata", false, "generates metadata of the generated filelist")
+
 func Generate(filePath string) {
+
 	tree := buildTree(filePath, *flagFileHashMethod)
 
 	data, err := yaml.Marshal(&tree)
@@ -29,7 +34,29 @@ func Generate(filePath string) {
 		os.Exit(1)
 	}
 
-	fmt.Println(string(data))
+	if len(*flagOutFile) > 0 {
+		err = os.WriteFile(*flagOutFile, data, 0644)
+		if err != nil {
+			os.Exit(1)
+		}
+
+		if *flagGenerateMetadata {
+			var metadataFile = *flagOutFile + ".meta"
+			if extensions.FileExists(metadataFile) {
+				//TODO
+			} else {
+				//TODO
+				err = os.WriteFile(metadataFile, data, 0644)
+				if err != nil {
+					os.Exit(1)
+				}
+			}
+		}
+
+	} else {
+		fmt.Println(string(data))
+	}
+
 	os.Exit(0)
 }
 
