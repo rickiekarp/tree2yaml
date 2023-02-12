@@ -1,11 +1,12 @@
 package model
 
-func (f *FileTree) ContainsFile(fileToCompare *File) bool {
+func (f *FileTree) ContainsFile(fileToCompare *File) (bool, *File) {
 	var contains = false
+	var file *File = nil
 
 	for _, file := range f.Tree.Files {
 		if file == fileToCompare {
-			return true
+			return true, file
 		}
 	}
 
@@ -13,6 +14,7 @@ func (f *FileTree) ContainsFile(fileToCompare *File) bool {
 		TraverseFiles(folder.Files, func(x *File) {
 			if isEqualFile(fileToCompare, x) {
 				contains = true
+				file = x
 				return
 			}
 		})
@@ -21,13 +23,14 @@ func (f *FileTree) ContainsFile(fileToCompare *File) bool {
 			TraverseFolders(nextFolder, func(x *File) {
 				if isEqualFile(fileToCompare, x) {
 					contains = true
+					file = x
 					return
 				}
 			})
 		}
 	}
 
-	return contains
+	return contains, file
 }
 
 func isEqualFile(a, b *File) bool {

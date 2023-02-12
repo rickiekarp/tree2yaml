@@ -15,8 +15,8 @@ func GenerateMetadata(filetree *model.FileTree) {
 
 	if extensions.FileExists(metadataFile) {
 		metadataFiletree := loader.LoadFilelist(metadataFile)
-		newFiletree := updateMetadata(filetree, metadataFiletree)
-		writeMetadataToFile(newFiletree, metadataFile)
+		newMetadata := updateMetadata(filetree, metadataFiletree)
+		writeMetadataToFile(newMetadata, metadataFile)
 	} else {
 		newFiletree := addMetadataToFiles(filetree)
 		writeMetadataToFile(newFiletree, metadataFile)
@@ -46,27 +46,36 @@ func addMetadataToFiles(filetree *model.FileTree) *model.FileTree {
 
 func updateMetadata(filetree *model.FileTree, metadata *model.FileTree) *model.FileTree {
 
-	for _, folder := range metadata.Tree.Folders {
+	for _, folder := range filetree.Tree.Folders {
 
 		model.TraverseFiles(folder.Files, func(x *model.File) {
 			// if a metadata file was found in the file tree, increment the revision
-			if filetree.ContainsFile(x) {
-				x.Metadata.Revision += 1
+			contains, file := metadata.ContainsFile(x)
+			if contains {
+				x.Metadata.Revision = file.Metadata.Revision + 1
+			} else {
+				x.Metadata = model.FileMetadata{
+					Revision: 1,
+				}
 			}
-			// TODO: add deleting files from metadata
 		})
 
 		for _, nextFolder := range folder.Folders {
 			model.TraverseFolders(nextFolder, func(x *model.File) {
 				// if a metadata file was found in the file tree, increment the revision
-				if filetree.ContainsFile(x) {
-					x.Metadata.Revision += 1
+				contains, file := metadata.ContainsFile(x)
+				if contains {
+					x.Metadata.Revision = file.Metadata.Revision + 1
+				} else {
+					x.Metadata = model.FileMetadata{
+						Revision: 1,
+					}
 				}
 			})
 		}
 	}
 
-	return metadata
+	return filetree
 }
 
 func writeMetadataToFile(filetree *model.FileTree, metadataFile string) {
