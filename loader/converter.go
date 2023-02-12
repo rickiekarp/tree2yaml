@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func loadFilelist(filePath string) *model.FileTree {
+func LoadFilelist(filePath string) *model.FileTree {
 	var fileTree *model.FileTree
 	yamlFile, err := ioutil.ReadFile(filePath)
 	if err != nil {

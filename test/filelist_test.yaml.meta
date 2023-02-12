@@ -9,17 +9,25 @@ tree:
     - name: fileA
       size: 8
       lastmodified: 2023-01-28T20:58:20.126212581+01:00
+      metadata:
+        revision: 1
     - name: fileB
       size: 8
       lastmodified: 2023-01-28T20:58:09.113312672+01:00
+      metadata:
+        revision: 1
     folders:
     - name: subFolderA
       files:
       - name: subFileA
         size: 15
         lastmodified: 2023-02-12T12:14:59.010656376+01:00
+        metadata:
+          revision: 1
   - name: folderB
     files:
     - name: fileC
       size: 11
       lastmodified: 2023-01-24T20:40:50.690536654+01:00
+      metadata:
+        revision: 1

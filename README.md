@@ -5,6 +5,8 @@ Generates a file list for a given path in yaml format
 ### Available commands
 ```
 Usage of tree2yaml:
+  -enableMetadata
+    	generates metadata of the generated filelist
   -filterByDate string
     	filters files by given date, e.g. -filterByDate=2022-12-24
   -filterByDateDirection string
@@ -29,13 +31,21 @@ Usage of tree2yaml:
     	ignore case when matching files, can be combined with -find flag
   -load
     	loads an existing filelist
+  -outfile string
+    	path of the output file
 ```
 
 
 ## Create file list
 
 ```
-go run main.go test/rootFolder > test/filelist_test.yaml
+go run main.go -outfile=test/filelist_test.yaml test/rootFolder
+```
+
+### Create filelist with metadata
+
+```
+go run main.go -outfile=test/filelist_test.yaml -enableMetadata test/rootFolder
 ```
 
 ## Load file list

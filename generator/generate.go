@@ -10,7 +10,6 @@ import (
 	"sort"
 	"strings"
 
-	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
@@ -41,16 +40,7 @@ func Generate(filePath string) {
 		}
 
 		if *flagGenerateMetadata {
-			var metadataFile = *flagOutFile + ".meta"
-			if extensions.FileExists(metadataFile) {
-				//TODO
-			} else {
-				//TODO
-				err = os.WriteFile(metadataFile, data, 0644)
-				if err != nil {
-					os.Exit(1)
-				}
-			}
+			GenerateMetadata(tree)
 		}
 
 	} else {

@@ -1,10 +1,7 @@
 package model
 
 import (
-	"fmt"
 	"time"
-
-	"gopkg.in/yaml.v2"
 )
 
 type FileTree struct {
@@ -20,20 +17,16 @@ type Folder struct {
 	Folders []*Folder `yaml:"folders,omitempty"`
 }
 
-func (f *Folder) String() string {
-	j, _ := yaml.Marshal(f)
-	return string(j)
-}
-
 type File struct {
 	Name         string
 	Size         int64
 	LastModified time.Time
-	Crc32        uint32 `yaml:"crc32,omitempty"`
-	Crc64        uint64 `yaml:"crc64,omitempty"`
-	Md5          string `yaml:"md5,omitempty"`
+	Crc32        uint32       `yaml:"crc32,omitempty"`
+	Crc64        uint64       `yaml:"crc64,omitempty"`
+	Md5          string       `yaml:"md5,omitempty"`
+	Metadata     FileMetadata `yaml:"metadata,omitempty"`
 }
 
-func (f *File) String() string {
-	return fmt.Sprintf("%s", f.Name)
+type FileMetadata struct {
+	Revision int64
 }

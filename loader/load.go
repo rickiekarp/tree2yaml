@@ -56,7 +56,7 @@ func Load(filePath string) {
 
 		} else {
 
-			filelist := loadFilelist(filePath)
+			filelist := LoadFilelist(filePath)
 			result := extractor.MatchOccurrencesInFileTree(filelist, flagMatchFiles, flagIgnoreCase)
 			printer.PrintFileListWithOccurrences(result)
 
@@ -64,14 +64,14 @@ func Load(filePath string) {
 
 	} else {
 
-		filelist := loadFilelist(filePath)
+		filelist := LoadFilelist(filePath)
 		printer.PrintFilelist(filelist)
 
 	}
 }
 
 func findFiles(filePath string) {
-	filelist := loadFilelist(filePath)
+	filelist := LoadFilelist(filePath)
 	splitDirectorySlice := strings.Split(*flagFindFiles, "/")
 	folder := extractor.FindFolder(filelist.Tree, splitDirectorySlice)
 	if folder == nil {
@@ -87,7 +87,7 @@ func findFiles(filePath string) {
 
 func findFolders(filePath string) {
 	splitDirectorySlice := strings.Split(*flagFindFolders, "/")
-	filelist := loadFilelist(filePath)
+	filelist := LoadFilelist(filePath)
 	folder := extractor.FindFolder(filelist.Tree, splitDirectorySlice)
 	if folder == nil {
 		os.Exit(0)
