@@ -5,7 +5,7 @@ func (f *FileTree) ContainsFile(fileToCompare *File) (bool, *File) {
 	var file *File = nil
 
 	for _, file := range f.Tree.Files {
-		if file == fileToCompare {
+		if isEqualFile(fileToCompare, file) {
 			return true, file
 		}
 	}
@@ -36,5 +36,5 @@ func (f *FileTree) ContainsFile(fileToCompare *File) (bool, *File) {
 func isEqualFile(a, b *File) bool {
 	return a.Name == b.Name &&
 		a.Size == b.Size &&
-		a.LastModified == b.LastModified
+		a.LastModified.UTC() == b.LastModified.UTC()
 }
