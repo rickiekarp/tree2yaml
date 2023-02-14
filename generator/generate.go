@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
+	"git.rickiekarp.net/rickie/tree2yaml/loader"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
 	"gopkg.in/yaml.v2"
@@ -22,10 +23,16 @@ var flagFileHashMethod = flag.String("hash", "", "calculate hash sum of each fil
 
 var flagOutFile = flag.String("outfile", "", "path of the output file")
 var flagGenerateMetadata = flag.Bool("enableMetadata", false, "generates metadata of the generated filelist")
+var flagGenerateMetadataOnly = flag.Bool("generateMetadataFromFile", false, "generates metadata of the generated filelist")
 
 func Generate(filePath string) {
 
-	tree := buildTree(filePath, *flagFileHashMethod)
+	var tree *model.FileTree = nil
+	if *flagGenerateMetadataOnly {
+		tree = loader.LoadFilelist(filePath)
+	} else {
+		tree = buildTree(filePath, *flagFileHashMethod)
+	}
 
 	data, err := yaml.Marshal(&tree)
 	if err != nil {
