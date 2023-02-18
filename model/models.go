@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+	"hash/fnv"
 	"time"
 )
 
@@ -27,6 +29,18 @@ type File struct {
 	Metadata     FileMetadata `yaml:"metadata,omitempty"`
 }
 
+func (k File) Hash() uint64 {
+	h := fnv.New64a()
+	h.Write([]byte(fmt.Sprintf(
+		"%s-%d-%s-%d-%d-%s", k.Name, k.Size, k.LastModified.String(), k.Crc32, k.Crc64, k.Md5)))
+	return h.Sum64()
+}
+
 type FileMetadata struct {
+	Revision int64
+}
+
+type FileArchive struct {
+	Name     string
 	Revision int64
 }

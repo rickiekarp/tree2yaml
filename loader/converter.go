@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"git.rickiekarp.net/rickie/tree2yaml/model"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func LoadFilelist(filePath string) *model.FileTree {
@@ -32,4 +32,18 @@ func loadFilelistFromString(fileContent string) *model.FileTree {
 	}
 
 	return fileTree
+}
+
+func LoadFileArchive(filePath string) map[uint64]model.FileArchive {
+	var archive map[uint64]model.FileArchive
+	yamlFile, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, &archive)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
+
+	return archive
 }

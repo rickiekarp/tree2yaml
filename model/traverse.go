@@ -1,17 +1,31 @@
 package model
 
 type fileIterationFn func(*File)
+type folderIterationFn func(*Folder, int)
 
 func TraverseFiles(files []*File, onFileIteration fileIterationFn) {
+	if onFileIteration == nil {
+		return
+	}
 	for _, file := range files {
 		onFileIteration(file)
 	}
 }
 
-func TraverseFolders(folders *Folder, onFileIteration fileIterationFn) {
+func TraverseFilesAndFolders(folders *Folder, onFileIteration fileIterationFn, onFolderIteration folderIterationFn) {
 	TraverseFiles(folders.Files, onFileIteration)
+	TraverseFolder(folders.Folders, onFolderIteration)
 
 	for _, folder := range folders.Folders {
-		TraverseFolders(folder, onFileIteration)
+		TraverseFilesAndFolders(folder, onFileIteration, onFolderIteration)
+	}
+}
+
+func TraverseFolder(folders []*Folder, onFolderIteration folderIterationFn) {
+	if onFolderIteration == nil {
+		return
+	}
+	for i, folder := range folders {
+		onFolderIteration(folder, i)
 	}
 }

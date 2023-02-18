@@ -20,21 +20,39 @@ func (f *FileTree) ContainsFile(fileToCompare *File) (bool, *File) {
 		})
 
 		for _, nextFolder := range folder.Folders {
-			TraverseFolders(nextFolder, func(x *File) {
+			TraverseFilesAndFolders(nextFolder, func(x *File) {
 				if isEqualFile(fileToCompare, x) {
 					contains = true
 					file = x
 					return
 				}
-			})
+			}, nil)
 		}
 	}
 
 	return contains, file
 }
 
+func (f *Folder) AddFile(fileToAdd *File) {
+	f.Files = append(f.Files, fileToAdd)
+}
+
+func (f *Folder) AddFolder(newFolderName string) *Folder {
+	var newFolder = &Folder{Name: newFolderName}
+	f.Folders = append(f.Folders, newFolder)
+	return newFolder
+}
+
 func isEqualFile(a, b *File) bool {
-	return a.Name == b.Name &&
+	return a != nil && b != nil &&
+		a.Name == b.Name &&
 		a.Size == b.Size &&
 		a.LastModified.UTC() == b.LastModified.UTC()
+}
+
+func isEqualFolder(a, b *Folder) bool {
+	return a != nil && b != nil &&
+		a.Name == b.Name &&
+		len(a.Files) == len(b.Files) &&
+		len(a.Folders) == len(b.Folders)
 }

@@ -46,7 +46,6 @@ func Load(filePath string) {
 					fileList := loadFilelistFromString(fileContent)
 					var result = extractor.MatchOccurrencesInFileTree(fileList, flagMatchFiles, flagIgnoreCase)
 					results = deepCopyFileMap(result, results)
-
 				} else {
 					fmt.Println("File not found:", filePath)
 				}

@@ -10,11 +10,12 @@ import (
 	"sort"
 	"strings"
 
+	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/loader"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var Version = "development" // Version set during go build using ldflags
@@ -23,31 +24,33 @@ var flagFileHashMethod = flag.String("hash", "", "calculate hash sum of each fil
 
 var flagOutFile = flag.String("outfile", "", "path of the output file")
 var flagGenerateMetadata = flag.Bool("enableMetadata", false, "generates metadata of the generated filelist")
-var flagGenerateMetadataOnly = flag.Bool("generateMetadataFromFile", false, "generates metadata of the generated filelist")
+var flagGenerateArchive = flag.Bool("enableArchive", false, "generates archive of the generated filelist")
+var flagLoadFromFile = flag.Bool("generateMetadataFromFile", false, "load a file list file")
 
 func Generate(filePath string) {
 
 	var tree *model.FileTree = nil
-	if *flagGenerateMetadataOnly {
+	if *flagLoadFromFile {
 		tree = loader.LoadFilelist(filePath)
 	} else {
 		tree = buildTree(filePath, *flagFileHashMethod)
 	}
 
-	data, err := yaml.Marshal(&tree)
+	data, err := marshalFileTree(tree)
 	if err != nil {
 		fmt.Printf("Error while Marshaling. %v", err)
 		os.Exit(1)
 	}
 
 	if len(*flagOutFile) > 0 {
-		err = os.WriteFile(*flagOutFile, data, 0644)
-		if err != nil {
-			os.Exit(1)
-		}
+		writeFiletreeToFile(tree, *flagOutFile)
 
 		if *flagGenerateMetadata {
-			GenerateMetadata(tree)
+			GenerateAdditionalData(tree, Metadata)
+		}
+
+		if *flagGenerateArchive {
+			GenerateAdditionalData(tree, Archive)
 		}
 
 	} else {
@@ -55,6 +58,42 @@ func Generate(filePath string) {
 	}
 
 	os.Exit(0)
+}
+
+func GenerateAdditionalData(filetree *model.FileTree, generationType GenerationType) {
+	var dataFile = *flagOutFile + "." + generationType.String()
+	var outFiletree *model.FileTree = nil
+
+	switch generationType {
+	case Archive:
+		metaDataFile := *flagOutFile + "." + Metadata.String()
+		if extensions.FileExists(metaDataFile) {
+			metadataFiletree := loader.LoadFilelist(metaDataFile)
+			var archiveMap map[uint64]model.FileArchive = nil
+			if extensions.FileExists(dataFile) {
+				fileArchiveMap := loader.LoadFileArchive(dataFile)
+				archiveMap = updateArchive(metadataFiletree, fileArchiveMap)
+			} else {
+				archiveMap = createArchive(filetree)
+			}
+			writeFileArchiveToFile(archiveMap, dataFile)
+		} else {
+			archiveMap := createArchive(filetree)
+			writeFileArchiveToFile(archiveMap, dataFile)
+		}
+	case Metadata:
+		if extensions.FileExists(dataFile) {
+			additionalDataFiletree := loader.LoadFilelist(dataFile)
+			switch generationType {
+			case Metadata:
+				outFiletree = updateMetadata(filetree, additionalDataFiletree)
+				writeFiletreeToFile(outFiletree, dataFile)
+			}
+		} else {
+			outFiletree = addMetadataToFiles(filetree)
+			writeFiletreeToFile(outFiletree, dataFile)
+		}
+	}
 }
 
 func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
@@ -135,5 +174,34 @@ func calcHashByMethod(hashMethod string, file *model.File, filePath string) {
 	case "md5":
 		md5 := hash.CalcMd5(filePath)
 		file.Md5 = md5
+	}
+}
+
+func marshalFileTree(filetree *model.FileTree) ([]byte, error) {
+	return yaml.Marshal(&filetree)
+}
+
+func writeFiletreeToFile(filetree *model.FileTree, outFile string) {
+	data, err := marshalFileTree(filetree)
+	if err != nil {
+		fmt.Printf("Error while Marshaling. %v", err)
+		os.Exit(1)
+	}
+
+	err = os.WriteFile(outFile, data, 0644)
+	if err != nil {
+		os.Exit(1)
+	}
+}
+
+func writeFileArchiveToFile(archive map[uint64]model.FileArchive, outFile string) {
+	data, err := yaml.Marshal(archive)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.WriteFile(outFile, data, 0644)
+	if err != nil {
+		os.Exit(1)
 	}
 }
