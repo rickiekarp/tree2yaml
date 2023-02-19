@@ -15,7 +15,7 @@ import (
 	"git.rickiekarp.net/rickie/tree2yaml/loader"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 )
 
 var Version = "development" // Version set during go build using ldflags

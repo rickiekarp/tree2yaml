@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"git.rickiekarp.net/rickie/tree2yaml/model"
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 )
 
 func LoadFilelist(filePath string) *model.FileTree {

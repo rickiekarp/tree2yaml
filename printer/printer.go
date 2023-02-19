@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"git.rickiekarp.net/rickie/tree2yaml/model"
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 )
 
 func PrintFilelist(filelist *model.FileTree) {
