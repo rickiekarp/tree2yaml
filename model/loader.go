@@ -1,15 +1,14 @@
-package loader
+package model
 
 import (
 	"io/ioutil"
 	"log"
 
-	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"gopkg.in/yaml.v2"
 )
 
-func LoadFilelist(filePath string) *model.FileTree {
-	var fileTree *model.FileTree
+func LoadFilelist(filePath string) *FileTree {
+	var fileTree *FileTree
 	yamlFile, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
@@ -22,8 +21,8 @@ func LoadFilelist(filePath string) *model.FileTree {
 	return fileTree
 }
 
-func loadFilelistFromString(fileContent string) *model.FileTree {
-	var fileTree *model.FileTree
+func LoadFilelistFromString(fileContent string) *FileTree {
+	var fileTree *FileTree
 	byteSlice := []byte(fileContent)
 
 	err := yaml.Unmarshal(byteSlice, &fileTree)
@@ -34,8 +33,8 @@ func loadFilelistFromString(fileContent string) *model.FileTree {
 	return fileTree
 }
 
-func LoadFileArchive(filePath string) map[uint64]model.FileArchive {
-	var archive map[uint64]model.FileArchive
+func LoadFileArchive(filePath string) map[uint64]FileArchive {
+	var archive map[uint64]FileArchive
 	yamlFile, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)

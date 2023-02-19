@@ -12,7 +12,6 @@ import (
 
 	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
-	"git.rickiekarp.net/rickie/tree2yaml/loader"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
 	"gopkg.in/yaml.v2"
@@ -31,7 +30,7 @@ func Generate(filePath string) {
 
 	var tree *model.FileTree = nil
 	if *flagLoadFromFile {
-		tree = loader.LoadFilelist(filePath)
+		tree = model.LoadFilelist(filePath)
 	} else {
 		tree = buildTree(filePath, *flagFileHashMethod)
 	}
@@ -68,10 +67,10 @@ func GenerateAdditionalData(filetree *model.FileTree, generationType GenerationT
 	case Archive:
 		metaDataFile := *flagOutFile + "." + Metadata.String()
 		if extensions.FileExists(metaDataFile) {
-			metadataFiletree := loader.LoadFilelist(metaDataFile)
+			metadataFiletree := model.LoadFilelist(metaDataFile)
 			var archiveMap map[uint64]model.FileArchive = nil
 			if extensions.FileExists(dataFile) {
-				fileArchiveMap := loader.LoadFileArchive(dataFile)
+				fileArchiveMap := model.LoadFileArchive(dataFile)
 				archiveMap = updateArchive(metadataFiletree, fileArchiveMap)
 			} else {
 				archiveMap = createArchive(filetree)
@@ -83,7 +82,7 @@ func GenerateAdditionalData(filetree *model.FileTree, generationType GenerationT
 		}
 	case Metadata:
 		if extensions.FileExists(dataFile) {
-			additionalDataFiletree := loader.LoadFilelist(dataFile)
+			additionalDataFiletree := model.LoadFilelist(dataFile)
 			switch generationType {
 			case Metadata:
 				outFiletree = updateMetadata(filetree, additionalDataFiletree)

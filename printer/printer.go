@@ -36,3 +36,12 @@ func PrintFileListWithOccurrences(fileOccurrenceMap map[int][]model.File) {
 		fmt.Println()
 	}
 }
+
+func PrintArchive(archive map[uint64]model.FileArchive) {
+	out, err := yaml.Marshal(archive)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(out))
+}

@@ -1,7 +1,7 @@
 package model
 
 type fileIterationFn func(*File)
-type folderIterationFn func(*Folder, int)
+type folderIterationFn func(*Folder)
 
 func TraverseFiles(files []*File, onFileIteration fileIterationFn) {
 	if onFileIteration == nil {
@@ -25,7 +25,7 @@ func TraverseFolder(folders []*Folder, onFolderIteration folderIterationFn) {
 	if onFolderIteration == nil {
 		return
 	}
-	for i, folder := range folders {
-		onFolderIteration(folder, i)
+	for _, folder := range folders {
+		onFolderIteration(folder)
 	}
 }

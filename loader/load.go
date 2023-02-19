@@ -12,14 +12,21 @@ import (
 	"git.rickiekarp.net/rickie/tree2yaml/printer"
 )
 
+// modes
 var flagFindFiles = flag.String("findFilesIn", "", "finds files by a given search path, e.g. tree2yaml -load -findFilesIn=foo/bar /foo/bar.yaml")
 var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml -load -findFoldersIn=foo/bar /foo/bar.yaml")
 var flagMatchFiles = flag.String("find", "", "prints all file names that match the given arguments, grouped by occurrence, e.g. -find=foo,bar")
+var flagFindEventArchiveFiles = flag.Bool("findArchivedFiles", false, "prints archived files")
 
+// options
 var flagFilterByDate = flag.String("filterByDate", "", "filters files by given date, e.g. -filterByDate=2022-12-24")
 var flagFilterByDateDirection = flag.String("filterByDateDirection", "new", "direction of files to be filtered, e.g. 'old', 'new'")
 var flagIgnoreCase = flag.Bool("ignoreCase", false, "ignore case when matching files, can be combined with -find flag")
 
+// var flagOrderByRevision = flag.Bool("orderByRevision", false, "ignore case when matching files, can be combined with -find flag")
+// var flagOrderByRevisionDirection = flag.String("orderByRevisionDirection", "desc", "direction of flagOrderByRevision (asc,desc (default))")
+
+// external integrations
 var flagGitHistory = flag.Bool("git", false, "check git history")
 var flagGitLogDepth = flag.Int("git-depth", 3, "git log depth")
 
@@ -43,7 +50,7 @@ func Load(filePath string) {
 			for _, hash := range hashes {
 				fileContent, exitCode := gitconnector.ShowFileAtRevision(filePath, hash)
 				if exitCode == 0 {
-					fileList := loadFilelistFromString(fileContent)
+					fileList := model.LoadFilelistFromString(fileContent)
 					var result = extractor.MatchOccurrencesInFileTree(fileList, flagMatchFiles, flagIgnoreCase)
 					results = deepCopyFileMap(result, results)
 				} else {
@@ -55,22 +62,35 @@ func Load(filePath string) {
 
 		} else {
 
-			filelist := LoadFilelist(filePath)
+			filelist := model.LoadFilelist(filePath)
 			result := extractor.MatchOccurrencesInFileTree(filelist, flagMatchFiles, flagIgnoreCase)
 			printer.PrintFileListWithOccurrences(result)
 
 		}
 
+	} else if *flagFindEventArchiveFiles {
+
+		// load archive
+		fileArchive := model.LoadFileArchive(filePath)
+
+		if fileArchive != nil {
+			// order by if set
+			fmt.Println("Not implemented yet!")
+
+			// print result
+			printer.PrintArchive(fileArchive)
+		}
+
 	} else {
 
-		filelist := LoadFilelist(filePath)
+		filelist := model.LoadFilelist(filePath)
 		printer.PrintFilelist(filelist)
 
 	}
 }
 
 func findFiles(filePath string) {
-	filelist := LoadFilelist(filePath)
+	filelist := model.LoadFilelist(filePath)
 	splitDirectorySlice := strings.Split(*flagFindFiles, "/")
 	folder := extractor.FindFolder(filelist.Tree, splitDirectorySlice)
 	if folder == nil {
@@ -86,7 +106,7 @@ func findFiles(filePath string) {
 
 func findFolders(filePath string) {
 	splitDirectorySlice := strings.Split(*flagFindFolders, "/")
-	filelist := LoadFilelist(filePath)
+	filelist := model.LoadFilelist(filePath)
 	folder := extractor.FindFolder(filelist.Tree, splitDirectorySlice)
 	if folder == nil {
 		os.Exit(0)
