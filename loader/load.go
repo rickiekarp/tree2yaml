@@ -24,8 +24,8 @@ var flagFilterByDate = flag.String("filterByDate", "", "filters files by given d
 var flagFilterByDateDirection = flag.String("filterByDateDirection", "new", "direction of files to be filtered, e.g. 'old', 'new'")
 var flagIgnoreCase = flag.Bool("ignoreCase", false, "ignore case when matching files, can be combined with -find flag")
 
-var flagOrderByRevision = flag.Bool("orderByRevision", false, "orders the file archive results by the number of revisions")
-var flagOrderByRevisionDirection = flag.String("orderByRevisionDirection", "desc", "direction of flagOrderByRevision (asc,desc (default))")
+var flagGroupByRevision = flag.Bool("groupByRevision", false, "groups the file archive results by the number of revisions")
+var flagGroupByRevisionLimit = flag.Int64("groupByRevisionLimit", 0, "limits results by the number of revisions (0 = no limit)")
 
 // external integrations
 var flagGitHistory = flag.Bool("git", false, "check git history")
@@ -76,31 +76,39 @@ func Load(filePath string) {
 
 		if fileArchive != nil {
 
-			// order by if set
-			keys := make([]uint64, 0, len(fileArchive))
-			for key := range fileArchive {
-				keys = append(keys, key)
-			}
-
-			sort.SliceStable(keys, func(i, j int) bool {
-				return fileArchive[keys[i]].Revision > fileArchive[keys[j]].Revision
-			})
-
-			var revisionCount int64 = -1
-			var lastRevisionCount int64 = -1
-			for _, k := range keys {
-
-				if lastRevisionCount > -1 && lastRevisionCount != fileArchive[k].Revision {
-					fmt.Println()
+			if *flagGroupByRevision {
+				// order by if set
+				keys := make([]uint64, 0, len(fileArchive))
+				for key := range fileArchive {
+					keys = append(keys, key)
 				}
 
-				if revisionCount != fileArchive[k].Revision {
-					fmt.Printf("--- Files with number of revisions: %v\n", fileArchive[k].Revision)
-					revisionCount = fileArchive[k].Revision
-				}
+				sort.SliceStable(keys, func(i, j int) bool {
+					return fileArchive[keys[i]].Revision > fileArchive[keys[j]].Revision
+				})
 
-				fmt.Println(fileArchive[k].Name)
-				lastRevisionCount = fileArchive[k].Revision
+				var revisionCount int64 = -1
+				var lastRevisionCount int64 = -1
+				for _, k := range keys {
+
+					if *flagGroupByRevisionLimit > 0 && fileArchive[k].Revision <= *flagGroupByRevisionLimit {
+						break
+					}
+
+					if lastRevisionCount > -1 && lastRevisionCount != fileArchive[k].Revision {
+						fmt.Println()
+					}
+
+					if revisionCount != fileArchive[k].Revision {
+						fmt.Printf("--- Files with number of revisions: %v\n", fileArchive[k].Revision)
+						revisionCount = fileArchive[k].Revision
+					}
+
+					fmt.Println(fileArchive[k].Name)
+					lastRevisionCount = fileArchive[k].Revision
+				}
+			} else {
+				printer.PrintArchive(fileArchive)
 			}
 		}
 
