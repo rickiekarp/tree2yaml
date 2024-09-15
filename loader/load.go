@@ -66,7 +66,6 @@ func Load(filePath string) {
 			filelist := model.LoadFilelist(filePath)
 			result := extractor.MatchOccurrencesInFileTree(filelist, flagMatchFiles, flagIgnoreCase)
 			printer.PrintFileListWithOccurrences(result)
-
 		}
 
 	} else if *flagFindEventArchiveFiles {
@@ -111,12 +110,9 @@ func Load(filePath string) {
 				printer.PrintArchive(fileArchive)
 			}
 		}
-
 	} else {
-
 		filelist := model.LoadFilelist(filePath)
 		printer.PrintFilelist(filelist)
-
 	}
 }
 

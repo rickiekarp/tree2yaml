@@ -118,21 +118,9 @@ func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
 				LastModified: info.ModTime(),
 			}
 
-			if *eventsender.FlagEventsEnabled {
-				// prepare and send FileStorage event message
-				filePathDir := fileToAdd.Path
-				pathHash := hash.CalcSha1(filePathDir)
-				fileChecksum := string(fileToAdd.Sha1())
-				event := eventsender.FileStorageEventMessage{
-					Path:     filePathDir,
-					Name:     fileToAdd.Name,
-					Size:     fileToAdd.Size,
-					Mtime:    fileToAdd.LastModified.Unix(),
-					Checksum: hash.CalcSha1(pathHash + "/" + fileChecksum),
-				}
-				eventsender.SendFileEvent(event)
-			}
+			eventsender.SendEventForFile(*fileToAdd)
 
+			// deprecated
 			if len(flagFileHashMethod) > 0 {
 				hashMethods := strings.Split(flagFileHashMethod, ",")
 				for _, hashMethod := range hashMethods {

@@ -7,14 +7,17 @@ import (
 	"log"
 	"net/http"
 
+	"git.rickiekarp.net/rickie/tree2yaml/hash"
+	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"github.com/sirupsen/logrus"
 )
 
 var FlagEventsEnabled = flag.Bool("eventsEnabled", false, "whether to send file events")
-var flagEventHost = flag.String("eventHost", "api.rickiekarp.net", "event url to send file events to")
+var flagEventHost = flag.String("eventHost", "api.rickiekarp.net", "event host to send file events to")
+var flagEventProtocol = flag.String("eventProtocol", "https", "event port to send file events to")
 
 func SendFileEvent(fileEvent FileStorageEventMessage) {
-	url := "http://" + *flagEventHost + "/hub/v1/queue/push"
+	url := *flagEventProtocol + "://" + *flagEventHost + "/hub/v1/queue/push"
 
 	tmpData, err := json.Marshal(fileEvent)
 	if err != nil {
@@ -37,5 +40,28 @@ func SendFileEvent(fileEvent FileStorageEventMessage) {
 	}
 	defer resp.Body.Close()
 
-	logrus.Debug("SendFileEvent:Status ", resp.Status)
+	logrus.Debug("SendFileEvent:Status ", resp.Status, " - ", url)
+}
+
+func SendEventForFile(file model.File) {
+	if *FlagEventsEnabled {
+		// prepare and send FileStorage event message
+		filePathDir := file.Path
+		pathHash := hash.CalcSha1(filePathDir)
+		fileChecksum := string(file.Sha1())
+
+		modifiedTime := file.LastModified.Unix()
+		if modifiedTime < 0 {
+			modifiedTime = 0
+		}
+
+		event := FileStorageEventMessage{
+			Path:     filePathDir,
+			Name:     file.Name,
+			Size:     file.Size,
+			Mtime:    modifiedTime,
+			Checksum: hash.CalcSha1(pathHash + "/" + fileChecksum),
+		}
+		SendFileEvent(event)
+	}
 }
