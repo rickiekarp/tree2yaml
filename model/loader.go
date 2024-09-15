@@ -1,15 +1,15 @@
 package model
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
 
 func LoadFilelist(filePath string) *FileTree {
 	var fileTree *FileTree
-	yamlFile, err := ioutil.ReadFile(filePath)
+	yamlFile, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}
@@ -35,7 +35,7 @@ func LoadFilelistFromString(fileContent string) *FileTree {
 
 func LoadFileArchive(filePath string) map[uint64]FileArchive {
 	var archive map[uint64]FileArchive
-	yamlFile, err := ioutil.ReadFile(filePath)
+	yamlFile, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}

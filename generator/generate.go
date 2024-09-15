@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"git.rickiekarp.net/rickie/tree2yaml/eventsender"
 	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
@@ -35,12 +36,6 @@ func Generate(filePath string) {
 		tree = buildTree(filePath, *flagFileHashMethod)
 	}
 
-	data, err := marshalFileTree(tree)
-	if err != nil {
-		fmt.Printf("Error while Marshaling. %v", err)
-		os.Exit(1)
-	}
-
 	if len(*flagOutFile) > 0 {
 		writeFiletreeToFile(tree, *flagOutFile)
 
@@ -53,13 +48,18 @@ func Generate(filePath string) {
 		}
 
 	} else {
+		data, err := marshalFileTree(tree)
+		if err != nil {
+			fmt.Printf("Error while Marshaling. %v", err)
+			os.Exit(1)
+		}
 		fmt.Println(string(data))
 	}
 
 	os.Exit(0)
 }
 
-func GenerateAdditionalData(filetree *model.FileTree, generationType GenerationType) {
+func GenerateAdditionalData(currentFileTree *model.FileTree, generationType GenerationType) {
 	var dataFile = *flagOutFile + "." + generationType.String()
 	var outFiletree *model.FileTree = nil
 
@@ -73,23 +73,23 @@ func GenerateAdditionalData(filetree *model.FileTree, generationType GenerationT
 				fileArchiveMap := model.LoadFileArchive(dataFile)
 				archiveMap = updateArchive(metadataFiletree, fileArchiveMap)
 			} else {
-				archiveMap = createArchive(filetree)
+				archiveMap = createArchive(currentFileTree)
 			}
 			writeFileArchiveToFile(archiveMap, dataFile)
 		} else {
-			archiveMap := createArchive(filetree)
+			archiveMap := createArchive(currentFileTree)
 			writeFileArchiveToFile(archiveMap, dataFile)
 		}
 	case Metadata:
 		if extensions.FileExists(dataFile) {
-			additionalDataFiletree := model.LoadFilelist(dataFile)
+			metaFileTree := model.LoadFilelist(dataFile)
 			switch generationType {
 			case Metadata:
-				outFiletree = updateMetadata(filetree, additionalDataFiletree)
+				outFiletree = updateMetadata(currentFileTree, metaFileTree)
 				writeFiletreeToFile(outFiletree, dataFile)
 			}
 		} else {
-			outFiletree = addMetadataToFiles(filetree)
+			outFiletree = addMetadataToFiles(currentFileTree)
 			writeFiletreeToFile(outFiletree, dataFile)
 		}
 	}
@@ -109,13 +109,27 @@ func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
 				Folders: []*model.Folder{},
 			}
 		} else {
-
 			filetree.Size += info.Size()
 
 			var fileToAdd = &model.File{
 				Name:         path.Base(filePath),
 				Size:         info.Size(),
 				LastModified: info.ModTime(),
+			}
+
+			if *eventsender.FlagEventsEnabled {
+				// prepare and send FileStorage event message
+				filePathDir := path.Dir(filePath)
+				pathHash := hash.CalcSha1(filePathDir)
+				fileChecksum := string(fileToAdd.Sha1())
+				event := eventsender.FileStorageEventMessage{
+					Path:     filePathDir,
+					Name:     fileToAdd.Name,
+					Size:     fileToAdd.Size,
+					Mtime:    fileToAdd.LastModified.Unix(),
+					Checksum: hash.CalcSha1(pathHash + "/" + fileChecksum),
+				}
+				eventsender.SendFileEvent(event)
 			}
 
 			if len(flagFileHashMethod) > 0 {

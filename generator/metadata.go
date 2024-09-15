@@ -31,9 +31,9 @@ func addMetadataToFiles(filetree *model.FileTree) *model.FileTree {
 	return filetree
 }
 
-func updateMetadata(filetree *model.FileTree, metadata *model.FileTree) *model.FileTree {
+func updateMetadata(currentFileTree *model.FileTree, metadata *model.FileTree) *model.FileTree {
 
-	model.TraverseFiles(filetree.Tree.Files, func(x *model.File) {
+	model.TraverseFiles(currentFileTree.Tree.Files, func(x *model.File) {
 		// if a metadata file was found in the file tree, increment the revision
 		contains, file := metadata.ContainsFile(x)
 		if contains {
@@ -45,7 +45,7 @@ func updateMetadata(filetree *model.FileTree, metadata *model.FileTree) *model.F
 		}
 	})
 
-	for _, folder := range filetree.Tree.Folders {
+	for _, folder := range currentFileTree.Tree.Folders {
 
 		model.TraverseFiles(folder.Files, func(x *model.File) {
 			// if a metadata file was found in the file tree, increment the revision
@@ -74,5 +74,5 @@ func updateMetadata(filetree *model.FileTree, metadata *model.FileTree) *model.F
 		}
 	}
 
-	return filetree
+	return currentFileTree
 }
