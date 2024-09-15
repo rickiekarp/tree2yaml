@@ -18,6 +18,7 @@ type Folder struct {
 }
 
 type File struct {
+	Path         string `yaml:"-"`
 	Name         string
 	Size         int64
 	LastModified time.Time
