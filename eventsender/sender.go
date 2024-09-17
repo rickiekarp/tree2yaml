@@ -13,11 +13,12 @@ import (
 )
 
 var FlagEventsEnabled = flag.Bool("eventsEnabled", false, "whether to send file events")
-var flagEventHost = flag.String("eventHost", "api.rickiekarp.net", "event host to send file events to")
-var flagEventProtocol = flag.String("eventProtocol", "https", "event port to send file events to")
+
+var EventSenderProtocol = "http"        // Version set during go build using ldflags
+var EventTargetHost = "localhost:12000" // Version set during go build using ldflags
 
 func SendFileEvent(fileEvent FileStorageEventMessage) {
-	url := *flagEventProtocol + "://" + *flagEventHost + "/hub/v1/queue/push"
+	url := EventSenderProtocol + "://" + EventTargetHost + "/hub/v1/queue/push"
 
 	tmpData, err := json.Marshal(fileEvent)
 	if err != nil {
