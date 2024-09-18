@@ -13,6 +13,7 @@ import (
 )
 
 var FlagEventsEnabled = flag.Bool("eventsEnabled", false, "whether to send file events")
+var FlagFileEventOwner = flag.String("eventFilelistOwner", "", "owner of the filelist event entry")
 
 var EventSenderProtocol = "http"        // Version set during go build using ldflags
 var EventTargetHost = "localhost:12000" // Version set during go build using ldflags
@@ -63,6 +64,11 @@ func SendEventForFile(file model.File) {
 			Mtime:    modifiedTime,
 			Checksum: hash.CalcSha1(pathHash + "/" + fileChecksum),
 		}
+
+		if len(*FlagFileEventOwner) > 0 {
+			event.Owner = *FlagFileEventOwner
+		}
+
 		SendFileEvent(event)
 	}
 }
