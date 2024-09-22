@@ -66,7 +66,7 @@ func SendEventForFile(file model.File) {
 		}
 
 		if len(*FlagFileEventOwner) > 0 {
-			event.Owner = *FlagFileEventOwner
+			event.Owner = FlagFileEventOwner
 		}
 
 		SendFileEvent(event)
