@@ -3,8 +3,8 @@ package eventsender
 type QueueEventType string
 
 const (
-	FilestoreAdd       QueueEventType = "filestore_add"
-	FilestoreAddExtras QueueEventType = "filestore_add_extras"
+	FilestoreAdd                  QueueEventType = "filestore_add"
+	FilestoreAdditionalDataUpdate QueueEventType = "filestore_additional_data_update"
 )
 
 type HubQueueEventMessage struct {
