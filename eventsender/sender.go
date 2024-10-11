@@ -49,10 +49,10 @@ func SendEventForFile(file model.File) {
 	if *FlagEventsEnabled {
 		// prepare and send FileStorage event message
 		filePathDir := file.Path
-		pathHash := hash.CalcSha1(filePathDir)
 		fileChecksum := string(file.Sha1())
-
 		modifiedTime := file.LastModified.Unix()
+
+		// the modifiedTime can be < 0 for old files, so we make sure here it fits into an unsigned integer
 		if modifiedTime < 0 {
 			modifiedTime = 0
 		}
@@ -62,7 +62,7 @@ func SendEventForFile(file model.File) {
 			Name:     file.Name,
 			Size:     file.Size,
 			Mtime:    modifiedTime,
-			Checksum: hash.CalcSha1(pathHash + "/" + fileChecksum),
+			Checksum: hash.CalcSha1(hash.CalcSha1(filePathDir) + "/" + fileChecksum),
 		}
 
 		if len(*FlagFileEventOwner) > 0 {
