@@ -90,11 +90,16 @@ func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
 		} else {
 			filetree.Size += info.Size()
 
-			pathWithoutRoot := strings.Replace(path.Dir(filePath), rootDir, "", 1)
-			pathWithoutRoot = strings.TrimPrefix(pathWithoutRoot, "/")
+			finalPath := strings.Replace(path.Dir(filePath), rootDir, "", 1)
+			finalPath = strings.TrimPrefix(finalPath, "/")
+
+			// the filePath will be empty if a file is present in the root working directory
+			if finalPath == "" {
+				finalPath = path.Dir(filePath)
+			}
 
 			var fileToAdd = &model.File{
-				Path:         pathWithoutRoot,
+				Path:         finalPath,
 				Name:         path.Base(filePath),
 				Size:         info.Size(),
 				LastModified: info.ModTime(),
