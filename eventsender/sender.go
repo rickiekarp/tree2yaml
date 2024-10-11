@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 
-	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"github.com/sirupsen/logrus"
 )
@@ -47,22 +46,19 @@ func SendFileEvent(fileEvent FileStorageEventMessage) {
 
 func SendEventForFile(file model.File) {
 	if *FlagEventsEnabled {
-		// prepare and send FileStorage event message
-		filePathDir := file.Path
-		fileChecksum := string(file.Sha1())
-		modifiedTime := file.LastModified.Unix()
 
 		// the modifiedTime can be < 0 for old files, so we make sure here it fits into an unsigned integer
+		modifiedTime := file.LastModified.Unix()
 		if modifiedTime < 0 {
 			modifiedTime = 0
 		}
 
+		// prepare and send FileStorage event message
 		event := FileStorageEventMessage{
-			Path:     filePathDir,
-			Name:     file.Name,
-			Size:     file.Size,
-			Mtime:    modifiedTime,
-			Checksum: hash.CalcSha1(hash.CalcSha1(filePathDir) + "/" + fileChecksum),
+			Path:  file.Path,
+			Name:  file.Name,
+			Size:  file.Size,
+			Mtime: modifiedTime,
 		}
 
 		if len(*FlagFileEventOwner) > 0 {
