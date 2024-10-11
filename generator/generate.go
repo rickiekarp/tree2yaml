@@ -24,7 +24,6 @@ var flagFileHashMethod = flag.String("hash", "", "calculate hash sum of each fil
 
 var flagOutFile = flag.String("outfile", "", "path of the output file")
 var flagGenerateMetadata = flag.Bool("enableMetadata", false, "generates metadata of the generated filelist")
-var flagGenerateArchive = flag.Bool("enableArchive", false, "generates archive of the generated filelist")
 var flagLoadFromFile = flag.Bool("generateMetadataFromFile", false, "load a file list file")
 
 func Generate(filePath string) {
@@ -41,10 +40,6 @@ func Generate(filePath string) {
 
 		if *flagGenerateMetadata {
 			GenerateAdditionalData(tree, Metadata)
-		}
-
-		if *flagGenerateArchive {
-			GenerateAdditionalData(tree, Archive)
 		}
 
 	} else {
@@ -64,22 +59,6 @@ func GenerateAdditionalData(currentFileTree *model.FileTree, generationType Gene
 	var outFiletree *model.FileTree = nil
 
 	switch generationType {
-	case Archive:
-		metaDataFile := *flagOutFile + "." + Metadata.String()
-		if extensions.FileExists(metaDataFile) {
-			metadataFiletree := model.LoadFilelist(metaDataFile)
-			var archiveMap map[uint64]model.FileArchive = nil
-			if extensions.FileExists(dataFile) {
-				fileArchiveMap := model.LoadFileArchive(dataFile)
-				archiveMap = updateArchive(metadataFiletree, fileArchiveMap)
-			} else {
-				archiveMap = createArchive(currentFileTree)
-			}
-			writeFileArchiveToFile(archiveMap, dataFile)
-		} else {
-			archiveMap := createArchive(currentFileTree)
-			writeFileArchiveToFile(archiveMap, dataFile)
-		}
 	case Metadata:
 		if extensions.FileExists(dataFile) {
 			metaFileTree := model.LoadFilelist(dataFile)
@@ -191,18 +170,6 @@ func writeFiletreeToFile(filetree *model.FileTree, outFile string) {
 	if err != nil {
 		fmt.Printf("Error while Marshaling. %v", err)
 		os.Exit(1)
-	}
-
-	err = os.WriteFile(outFile, data, 0644)
-	if err != nil {
-		os.Exit(1)
-	}
-}
-
-func writeFileArchiveToFile(archive map[uint64]model.FileArchive, outFile string) {
-	data, err := yaml.Marshal(archive)
-	if err != nil {
-		panic(err)
 	}
 
 	err = os.WriteFile(outFile, data, 0644)
