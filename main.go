@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"git.rickiekarp.net/rickie/goutilkit"
 	"git.rickiekarp.net/rickie/tree2yaml/generator"
 	"git.rickiekarp.net/rickie/tree2yaml/loader"
-	"git.rickiekarp.net/rickie/tree2yaml/printer"
 )
 
 func main() {
@@ -20,8 +20,7 @@ func main() {
 	flag.Parse()
 
 	if *flagHelp {
-		printer.PrintUsage()
-		os.Exit(0)
+		goutilkit.PrintUsageAndExit()
 	}
 
 	if *flagVersion {
@@ -31,7 +30,7 @@ func main() {
 
 	if len(flag.Args()) == 0 {
 		fmt.Println("No arguments provided!")
-		printer.PrintUsage()
+		goutilkit.PrintUsage()
 		os.Exit(1)
 	}
 	filePath := flag.Args()[0]
