@@ -7,17 +7,18 @@ import (
 	"log"
 	"net/http"
 
+	"git.rickiekarp.net/rickie/nexusform"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"github.com/sirupsen/logrus"
 )
 
 var FlagEventsEnabled = flag.Bool("eventsEnabled", false, "whether to send file events")
-var FlagFileEventOwner = flag.String("eventFilelistOwner", "", "owner of the filelist event entry")
+var FlagFileEventOwner = flag.String("eventFilelistOwner", "default", "owner of the filelist event entry")
 
 var EventSenderProtocol = "http"        // Version set during go build using ldflags
 var EventTargetHost = "localhost:12000" // Version set during go build using ldflags
 
-func SendFileEvent(fileEvent FileStorageEventMessage) {
+func sendFileEvent(fileEvent nexusform.FileListEntry) {
 	url := EventSenderProtocol + "://" + EventTargetHost + "/hub/v1/queue/push"
 
 	tmpData, err := json.Marshal(fileEvent)
@@ -25,8 +26,8 @@ func SendFileEvent(fileEvent FileStorageEventMessage) {
 		log.Fatal(err)
 	}
 
-	eventMessage := HubQueueEventMessage{
-		Event:   FilestoreAdd,
+	eventMessage := nexusform.HubQueueEventMessage{
+		Event:   nexusform.FilestoreAdd,
 		Payload: string(tmpData),
 	}
 
@@ -47,24 +48,15 @@ func SendFileEvent(fileEvent FileStorageEventMessage) {
 func SendEventForFile(file model.File) {
 	if *FlagEventsEnabled {
 
-		// the modifiedTime can be < 0 for old files, so we make sure here it fits into an unsigned integer
-		modifiedTime := file.LastModified.Unix()
-		if modifiedTime < 0 {
-			modifiedTime = 0
-		}
-
 		// prepare and send FileStorage event message
-		event := FileStorageEventMessage{
+		event := nexusform.FileListEntry{
 			Path:  file.Path,
 			Name:  file.Name,
 			Size:  file.Size,
-			Mtime: modifiedTime,
+			Mtime: file.LastModified.Unix(),
+			Owner: FlagFileEventOwner,
 		}
 
-		if len(*FlagFileEventOwner) > 0 {
-			event.Owner = FlagFileEventOwner
-		}
-
-		SendFileEvent(event)
+		sendFileEvent(event)
 	}
 }
