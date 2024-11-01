@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"git.rickiekarp.net/rickie/nexuscore"
 	"git.rickiekarp.net/rickie/nexusform"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"github.com/sirupsen/logrus"
@@ -19,7 +20,7 @@ var EventSenderProtocol = "http"        // Version set during go build using ldf
 var EventTargetHost = "localhost:12000" // Version set during go build using ldflags
 
 func sendFileEvent(fileEvent nexusform.FileListEntry) {
-	url := EventSenderProtocol + "://" + EventTargetHost + "/hub/v1/queue/push"
+	url := EventSenderProtocol + "://" + EventTargetHost + nexuscore.ApiHubQueuePush
 
 	tmpData, err := json.Marshal(fileEvent)
 	if err != nil {

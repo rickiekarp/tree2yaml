@@ -1,5 +1,7 @@
 git.rickiekarp.net/rickie/goutilkit v0.0.3 h1:ZuTUM5R9nSgz+K5Kh6cnAg06ALOLti1p3/MTf/s+VNw=
 git.rickiekarp.net/rickie/goutilkit v0.0.3/go.mod h1:KuJRt7bZ88ENKfqMGYxJjQxW5hYZQv+Rx7DrRwAUyAU=
+git.rickiekarp.net/rickie/nexuscore v0.0.7 h1:cbLnme7GMjj8VkboiOSIGrGYNuaMZlltZnQEt0AfbIw=
+git.rickiekarp.net/rickie/nexuscore v0.0.7/go.mod h1:9AIRb903ZRrxK3yj/pGZ4vT1g3Y5Ri2MuXSAPO5uPd8=
 git.rickiekarp.net/rickie/nexusform v0.0.8 h1:O/9CiCPP3rD+ZA4ky8uUcnDJUQ24U0oabjRJK8TR9/s=
 git.rickiekarp.net/rickie/nexusform v0.0.8/go.mod h1:eThnM1IguU06JlH4uFfpdNT/Gwj0531rlydGCwQQvX4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
