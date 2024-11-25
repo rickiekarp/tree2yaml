@@ -24,7 +24,7 @@ buildTree2YamlARM64v7:
 		main.go
 
 deployTree2Yaml:
-	rsync -rlvpt --delete build/tree2yaml pi:~/tools/
+	rsync -rlvpt --delete build/tree2yaml pi:~/tools/tree2yaml/
 
 clean:
 	rm -rf build
