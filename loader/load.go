@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 
 	"git.rickiekarp.net/rickie/tree2yaml/connector/gitconnector"
@@ -17,15 +16,11 @@ import (
 var flagFindFiles = flag.String("findFilesIn", "", "finds files by a given search path, e.g. tree2yaml -load -findFilesIn=foo/bar /foo/bar.yaml")
 var flagFindFolders = flag.String("findFoldersIn", "", "finds folders by a given search path, e.g. tree2yaml -load -findFoldersIn=foo/bar /foo/bar.yaml")
 var flagMatchFiles = flag.String("find", "", "prints all file names that match the given arguments, grouped by occurrence, e.g. -find=foo,bar")
-var flagFindEventArchiveFiles = flag.Bool("findArchivedFiles", false, "prints archived files")
 
 // options
 var flagFilterByDate = flag.String("filterByDate", "", "filters files by given date, e.g. -filterByDate=2022-12-24")
 var flagFilterByDateDirection = flag.String("filterByDateDirection", "new", "direction of files to be filtered, e.g. 'old', 'new'")
 var flagIgnoreCase = flag.Bool("ignoreCase", false, "ignore case when matching files, can be combined with -find flag")
-
-var flagGroupByRevision = flag.Bool("groupByRevision", false, "groups the file archive results by the number of revisions")
-var flagGroupByRevisionLimit = flag.Int64("groupByRevisionLimit", 0, "limits results by the number of revisions (0 = no limit)")
 
 // external integrations
 var flagGitHistory = flag.Bool("git", false, "check git history")
@@ -68,48 +63,6 @@ func Load(filePath string) {
 			printer.PrintFileListWithOccurrences(result)
 		}
 
-	} else if *flagFindEventArchiveFiles {
-
-		// load archive
-		fileArchive := model.LoadFileArchive(filePath)
-
-		if fileArchive != nil {
-
-			if *flagGroupByRevision {
-				// order by if set
-				keys := make([]uint64, 0, len(fileArchive))
-				for key := range fileArchive {
-					keys = append(keys, key)
-				}
-
-				sort.SliceStable(keys, func(i, j int) bool {
-					return fileArchive[keys[i]].Revision > fileArchive[keys[j]].Revision
-				})
-
-				var revisionCount int64 = -1
-				var lastRevisionCount int64 = -1
-				for _, k := range keys {
-
-					if *flagGroupByRevisionLimit > 0 && fileArchive[k].Revision <= *flagGroupByRevisionLimit {
-						break
-					}
-
-					if lastRevisionCount > -1 && lastRevisionCount != fileArchive[k].Revision {
-						fmt.Println()
-					}
-
-					if revisionCount != fileArchive[k].Revision {
-						fmt.Printf("--- Files with number of revisions: %v\n", fileArchive[k].Revision)
-						revisionCount = fileArchive[k].Revision
-					}
-
-					fmt.Println(fileArchive[k].Name)
-					lastRevisionCount = fileArchive[k].Revision
-				}
-			} else {
-				printer.PrintArchive(fileArchive)
-			}
-		}
 	} else {
 		filelist := model.LoadFilelist(filePath)
 		printer.PrintFilelist(filelist)

@@ -39,15 +39,6 @@ func PrintFileListWithOccurrences(fileOccurrenceMap map[int][]model.File) {
 	}
 }
 
-func PrintArchive(archive map[uint64]model.FileArchive) {
-	out, err := yaml.Marshal(archive)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(string(out))
-}
-
 func PrintAllFilesAndSendFileEvents(filelist *model.FileTree) {
 	path := filelist.RootDir
 

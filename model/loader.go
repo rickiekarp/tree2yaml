@@ -32,17 +32,3 @@ func LoadFilelistFromString(fileContent string) *FileTree {
 
 	return fileTree
 }
-
-func LoadFileArchive(filePath string) map[uint64]FileArchive {
-	var archive map[uint64]FileArchive
-	yamlFile, err := os.ReadFile(filePath)
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, &archive)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-
-	return archive
-}

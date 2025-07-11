@@ -31,8 +31,3 @@ type File struct {
 type FileMetadata struct {
 	Revision int64
 }
-
-type FileArchive struct {
-	Name     string
-	Revision int64
-}

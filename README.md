@@ -5,8 +5,6 @@ Generates a file list for a given path in yaml format
 ### Available commands
 ```
 Usage of tree2yaml:
-  -enableArchive
-    	generates archive of the generated filelist
   -enableMetadata
     	generates metadata of the generated filelist
   -filterByDate string
@@ -15,8 +13,6 @@ Usage of tree2yaml:
     	direction of files to be filtered, e.g. 'old', 'new' (default "new")
   -find string
     	prints all file names that match the given arguments, grouped by occurrence, e.g. -find=foo,bar
-  -findArchivedFiles
-    	prints archived files
   -findFilesIn string
     	finds files by a given search path, e.g. tree2yaml -load -findFilesIn=foo/bar /foo/bar.yaml
   -findFoldersIn string
@@ -29,10 +25,6 @@ Usage of tree2yaml:
     	check git history
   -git-depth int
     	git log depth (default 3)
-  -groupByRevision
-    	groups the file archive results by the number of revisions
-  -groupByRevisionLimit int
-    	limits results by the number of revisions (0 = no limit)
   -hash string
     	calculate hash sum of each file (crc32, crc64, md5)
   -help
@@ -111,22 +103,6 @@ fileB
 ```
 
 ## Create file list archive
-
-### List files grouped and limited by revision
-Input:
-```
-go run main.go -outfile=test/filelist_test.yaml -load -findArchivedFiles -groupByRevision -groupByRevisionLimit=2 test/filelist_test.yaml.archive
-```
-
-Output:
-```
---- Files with number of revisions: 4
-fileB
-
---- Files with number of revisions: 3
-subFileA
-
-```
 
 #### Git Mode
 
