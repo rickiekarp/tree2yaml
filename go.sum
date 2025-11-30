@@ -4,6 +4,10 @@ git.rickiekarp.net/rickie/nexuscore v1.24307.78424 h1:AHzJxAIrvl4PCi2GQ7hZ6iNrgb
 git.rickiekarp.net/rickie/nexuscore v1.24307.78424/go.mod h1:9AIRb903ZRrxK3yj/pGZ4vT1g3Y5Ri2MuXSAPO5uPd8=
 git.rickiekarp.net/rickie/nexusform v1.24324.77588 h1:urK4XaxqnXU8uJoJIeh0gvKfdq/67CJecSedWfg5qnI=
 git.rickiekarp.net/rickie/nexusform v1.24324.77588/go.mod h1:eThnM1IguU06JlH4uFfpdNT/Gwj0531rlydGCwQQvX4=
+git.rickiekarp.net/rickie/nexusform v1.25334.2039 h1:XGMp1/KUeGzKxbeRpBpe09CwL0jAFsqdRfMVAvaWPgg=
+git.rickiekarp.net/rickie/nexusform v1.25334.2039/go.mod h1:JUL7AdIDGVnfFQBnno2su3zoAOOoAj+FKDHY6fSIZsk=
+git.rickiekarp.net/rickie/nexusform v1.25334.83990 h1:pIA6mWC40TWJ949f4HcL8Ql7bwlgDSx4Cr5RINATWPg=
+git.rickiekarp.net/rickie/nexusform v1.25334.83990/go.mod h1:JUL7AdIDGVnfFQBnno2su3zoAOOoAj+FKDHY6fSIZsk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

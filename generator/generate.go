@@ -8,19 +8,18 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 
 	"git.rickiekarp.net/rickie/tree2yaml/eventsender"
 	"git.rickiekarp.net/rickie/tree2yaml/extensions"
-	"git.rickiekarp.net/rickie/tree2yaml/hash"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
 	"gopkg.in/yaml.v2"
 )
 
 var Version = "development" // Version set during go build using ldflags
-
-var flagFileHashMethod = flag.String("hash", "", "calculate hash sum of each file (crc32, crc64, md5)")
 
 var flagOutFile = flag.String("outfile", "", "path of the output file")
 var flagGenerateMetadata = flag.Bool("enableMetadata", false, "generates metadata of the generated filelist")
@@ -32,7 +31,7 @@ func Generate(filePath string) {
 	if *flagLoadFromFile {
 		tree = model.LoadFilelist(filePath)
 	} else {
-		tree = buildTree(filePath, *flagFileHashMethod)
+		tree = buildTree(filePath)
 	}
 
 	if len(*flagOutFile) > 0 {
@@ -74,12 +73,23 @@ func GenerateAdditionalData(currentFileTree *model.FileTree, generationType Gene
 	}
 }
 
-func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
+func buildTree(rootDir string) *model.FileTree {
 	rootDir = path.Clean(rootDir)
 
+	// generate process ID
+	t := time.Now()
+	year := t.Year()
+	day := t.YearDay() // 1–365 (or 366)
+	hour := t.Hour()
+	minute := t.Minute()
+	result := fmt.Sprintf("%d%03d%02d%02d", year, day, hour, minute)
+	fmt.Println(result) // e.g. "20250611203"
+	processId, _ := strconv.ParseInt(result, 10, 64)
+
+	// build file tree
 	var filetree *model.FileTree = &model.FileTree{}
 	var tree *model.Folder
-	var nodes = map[string]interface{}{}
+	var nodes = map[string]any{}
 	var walkFunc filepath.WalkFunc = func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			nodes[filePath] = &model.Folder{
@@ -105,15 +115,7 @@ func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
 				LastModified: info.ModTime(),
 			}
 
-			eventsender.SendEventForFile(*fileToAdd)
-
-			// deprecated
-			if len(flagFileHashMethod) > 0 {
-				hashMethods := strings.Split(flagFileHashMethod, ",")
-				for _, hashMethod := range hashMethods {
-					calcHashByMethod(hashMethod, fileToAdd, filePath)
-				}
-			}
+			eventsender.SendEventForFile(*fileToAdd, &processId)
 
 			nodes[filePath] = fileToAdd
 		}
@@ -150,20 +152,6 @@ func buildTree(rootDir string, flagFileHashMethod string) *model.FileTree {
 	filetree.Tree = tree
 
 	return filetree
-}
-
-func calcHashByMethod(hashMethod string, file *model.File, filePath string) {
-	switch hashMethod {
-	case "crc32":
-		crc32 := hash.CalcCrc32(filePath)
-		file.Crc32 = crc32
-	case "crc64":
-		crc64 := hash.CalcCrc64(filePath)
-		file.Crc64 = crc64
-	case "md5":
-		md5 := hash.CalcMd5(filePath)
-		file.Md5 = md5
-	}
 }
 
 func marshalFileTree(filetree *model.FileTree) ([]byte, error) {

@@ -22,14 +22,14 @@ var EventTargetHost = "localhost:12000" // Version set during go build using ldf
 func sendFileEvent(fileEvent nexusform.FileListEntry) {
 	url := EventSenderProtocol + "://" + EventTargetHost + nexuscore.ApiHubQueuePush
 
-	tmpData, err := json.Marshal(fileEvent)
+	fileEventPayloadBytes, err := json.Marshal(fileEvent)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	eventMessage := nexusform.HubQueueEventMessage{
 		Event:   nexusform.FilestoreAdd,
-		Payload: string(tmpData),
+		Payload: string(fileEventPayloadBytes),
 	}
 
 	jsonData, err := json.Marshal(eventMessage)
@@ -46,16 +46,17 @@ func sendFileEvent(fileEvent nexusform.FileListEntry) {
 	logrus.Debug("SendFileEvent:Status ", resp.Status, " - ", url)
 }
 
-func SendEventForFile(file model.File) {
+func SendEventForFile(file model.File, processId *int64) {
 	if *FlagEventsEnabled {
 
 		// prepare and send FileStorage event message
 		event := nexusform.FileListEntry{
-			Path:  file.Path,
-			Name:  file.Name,
-			Size:  file.Size,
-			Mtime: file.LastModified.Unix(),
-			Owner: FlagFileEventOwner,
+			Path:      file.Path,
+			Name:      file.Name,
+			Size:      file.Size,
+			Mtime:     file.LastModified.Unix(),
+			Owner:     FlagFileEventOwner,
+			ProcessId: processId,
 		}
 
 		sendFileEvent(event)

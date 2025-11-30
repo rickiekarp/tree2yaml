@@ -5,7 +5,7 @@ go 1.24.5
 require (
 	git.rickiekarp.net/rickie/goutilkit v1.24328.46372
 	git.rickiekarp.net/rickie/nexuscore v1.24307.78424
-	git.rickiekarp.net/rickie/nexusform v1.24324.77588
+	git.rickiekarp.net/rickie/nexusform v1.25334.83990
 	github.com/sirupsen/logrus v1.9.3
 	gopkg.in/yaml.v2 v2.2.4
 )
