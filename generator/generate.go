@@ -54,11 +54,11 @@ func buildTree(rootDir string) *model.FileTree {
 
 	// generate process ID
 	t := time.Now()
-	year := t.Year()
-	day := t.YearDay() // 1–365 (or 366)
+	year := t.Year() % 100 // take last 2 digits
+	day := t.YearDay()     // 1–365 (or 366)
 	hour := t.Hour()
 	minute := t.Minute()
-	result := fmt.Sprintf("%d%03d%02d%02d", year, day, hour, minute)
+	result := fmt.Sprintf("%02d%03d%02d%02d", year, day, hour, minute)
 	processId, _ := strconv.ParseInt(result, 10, 64)
 
 	// build file tree

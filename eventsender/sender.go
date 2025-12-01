@@ -55,7 +55,6 @@ func SendEventForFile(file model.File, processId *int64) {
 			Name:      file.Name,
 			Size:      file.Size,
 			Mtime:     file.LastModified.Unix(),
-			Owner:     FlagFileEventOwner,
 			Category:  FlagFileEventOwner,
 			ProcessId: processId,
 		}
