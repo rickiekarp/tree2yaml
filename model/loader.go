@@ -20,15 +20,3 @@ func LoadFilelist(filePath string) *FileTree {
 
 	return fileTree
 }
-
-func LoadFilelistFromString(fileContent string) *FileTree {
-	var fileTree *FileTree
-	byteSlice := []byte(fileContent)
-
-	err := yaml.Unmarshal(byteSlice, &fileTree)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-
-	return fileTree
-}

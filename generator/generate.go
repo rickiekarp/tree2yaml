@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"git.rickiekarp.net/rickie/tree2yaml/eventsender"
-	"git.rickiekarp.net/rickie/tree2yaml/extensions"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
 	"gopkg.in/yaml.v2"
@@ -22,25 +21,22 @@ import (
 var Version = "development" // Version set during go build using ldflags
 
 var flagOutFile = flag.String("outfile", "", "path of the output file")
-var flagGenerateMetadata = flag.Bool("enableMetadata", false, "generates metadata of the generated filelist")
 var flagLoadFromFile = flag.Bool("generateMetadataFromFile", false, "load a file list file")
 
 func Generate(filePath string) {
 
 	var tree *model.FileTree = nil
+
+	// load from file or build new tree
 	if *flagLoadFromFile {
 		tree = model.LoadFilelist(filePath)
 	} else {
 		tree = buildTree(filePath)
 	}
 
+	// print or write to file
 	if len(*flagOutFile) > 0 {
 		writeFiletreeToFile(tree, *flagOutFile)
-
-		if *flagGenerateMetadata {
-			GenerateAdditionalData(tree, Metadata)
-		}
-
 	} else {
 		data, err := marshalFileTree(tree)
 		if err != nil {
@@ -51,26 +47,6 @@ func Generate(filePath string) {
 	}
 
 	os.Exit(0)
-}
-
-func GenerateAdditionalData(currentFileTree *model.FileTree, generationType GenerationType) {
-	var dataFile = *flagOutFile + "." + generationType.String()
-	var outFiletree *model.FileTree = nil
-
-	switch generationType {
-	case Metadata:
-		if extensions.FileExists(dataFile) {
-			metaFileTree := model.LoadFilelist(dataFile)
-			switch generationType {
-			case Metadata:
-				outFiletree = updateMetadata(currentFileTree, metaFileTree)
-				writeFiletreeToFile(outFiletree, dataFile)
-			}
-		} else {
-			outFiletree = addMetadataToFiles(currentFileTree)
-			writeFiletreeToFile(outFiletree, dataFile)
-		}
-	}
 }
 
 func buildTree(rootDir string) *model.FileTree {
