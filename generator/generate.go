@@ -21,7 +21,8 @@ import (
 var Version = "development" // Version set during go build using ldflags
 
 var flagOutFile = flag.String("outfile", "", "path of the output file")
-var flagLoadFromFile = flag.Bool("generateMetadataFromFile", false, "load a file list file")
+var flagLoadFromFile = flag.Bool("infile", false, "load a file list file")
+var flagProcessId = flag.Int("processid", 0, "processId to assign to the generated filelist")
 
 func Generate(filePath string) {
 
@@ -53,13 +54,23 @@ func buildTree(rootDir string) *model.FileTree {
 	rootDir = path.Clean(rootDir)
 
 	// generate process ID
-	t := time.Now()
-	year := t.Year() % 100 // take last 2 digits
-	day := t.YearDay()     // 1–365 (or 366)
-	hour := t.Hour()
-	minute := t.Minute()
-	result := fmt.Sprintf("%02d%03d%02d%02d", year, day, hour, minute)
-	processId, _ := strconv.ParseInt(result, 10, 64)
+	processId := int64(0)
+	if *flagProcessId != 0 {
+		processId = int64(*flagProcessId)
+	} else {
+		t := time.Now()
+		year := t.Year() % 100 // take last 2 digits
+		day := t.YearDay()     // 1–365 (or 366)
+		hour := t.Hour()
+		minute := t.Minute()
+		result := fmt.Sprintf("%02d%03d%02d%02d", year, day, hour, minute)
+		parsedProcessId, err := strconv.ParseInt(result, 10, 64)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		processId = parsedProcessId
+	}
 
 	// build file tree
 	var filetree *model.FileTree = &model.FileTree{}
