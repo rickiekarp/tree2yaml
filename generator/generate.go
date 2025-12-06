@@ -51,6 +51,17 @@ func Generate(filePath string) {
 }
 
 func buildTree(rootDir string) *model.FileTree {
+
+	isFile, err := model.IsFile(rootDir)
+	if err != nil {
+		log.Println("error:", err)
+		os.Exit(1)
+	}
+	if isFile {
+		log.Fatalf("The provided path '%s' is a file. Please provide a directory path to generate a filelist.", rootDir)
+		os.Exit(1)
+	}
+
 	rootDir = path.Clean(rootDir)
 
 	// generate process ID
@@ -109,7 +120,7 @@ func buildTree(rootDir string) *model.FileTree {
 		return nil
 	}
 
-	err := filepath.Walk(rootDir, walkFunc)
+	err = filepath.Walk(rootDir, walkFunc)
 	if err != nil {
 		log.Fatal(err)
 	}
