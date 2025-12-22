@@ -14,7 +14,7 @@ import (
 )
 
 var FlagEventsEnabled = flag.Bool("eventsEnabled", false, "whether to send file events")
-var FlagFileEventOwner = flag.String("eventFilelistOwner", "default", "owner of the filelist event entry")
+var FlagFileCategory = flag.Int("eventFileCategory", 0, "category of the file")
 
 var EventSenderProtocol = "http"        // Version set during go build using ldflags
 var EventTargetHost = "localhost:12000" // Version set during go build using ldflags
@@ -55,7 +55,7 @@ func SendEventForFile(file model.File, processId *int64) {
 			Name:      file.Name,
 			Size:      file.Size,
 			Mtime:     file.LastModified.Unix(),
-			Category:  FlagFileEventOwner,
+			Category:  FlagFileCategory,
 			ProcessId: processId,
 		}
 
