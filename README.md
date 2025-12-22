@@ -5,10 +5,8 @@ Generates a file list for a given path in yaml format
 ### Available commands
 ```
 Usage of tree2yaml:
-  -enableMetadata
-    	generates metadata of the generated filelist
-  -eventFilelistOwner string
-    	owner of the filelist event entry (default "default")
+  -eventFileCategory int
+    	category of the file
   -eventsEnabled
     	whether to send file events
   -filterByDate string
@@ -21,16 +19,16 @@ Usage of tree2yaml:
     	finds folders by a given search path, e.g. tree2yaml -load -findFoldersIn=foo/bar /foo/bar.yaml
   -generate
     	generates a filelist (default true)
-  -generateMetadataFromFile
-    	load a file list file
-  -hash string
-    	calculate hash sum of each file (crc32, crc64, md5)
   -help
     	prints all available options
+  -infile
+    	load a file list file
   -load
     	loads an existing filelist
   -outfile string
     	path of the output file
+  -processid int
+    	processId to assign to the generated filelist
   -v	prints version
 ```
 
