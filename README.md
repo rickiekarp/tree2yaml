@@ -93,6 +93,6 @@ fileB
 ### File Events
 Input
 ```
-go run main.go -eventsEnabled -eventHost=localhost:12000 foo/
+go run main.go -eventsEnabled foo/
 ```
-The above command will enable file events to be sent to the given `eventHost`.
+The above command will enable file events to be sent to the configured `EventTargetHost`.

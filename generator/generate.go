@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"git.rickiekarp.net/rickie/tree2yaml/api"
 	"git.rickiekarp.net/rickie/tree2yaml/eventsender"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
 	"git.rickiekarp.net/rickie/tree2yaml/sorting"
@@ -123,6 +124,11 @@ func buildTree(rootDir string) *model.FileTree {
 	err = filepath.Walk(rootDir, walkFunc)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// update activelist preference after walking through files
+	if *eventsender.FlagEventsEnabled {
+		api.SendPreferenceUpdate(processId)
 	}
 
 	for key, value := range nodes {
