@@ -3,9 +3,9 @@ module git.rickiekarp.net/rickie/tree2yaml
 go 1.25.5
 
 require (
-	git.rickiekarp.net/rickie/goutilkit v1.24328.46372
-	git.rickiekarp.net/rickie/nexuscore v1.24307.78424
-	git.rickiekarp.net/rickie/nexusform v1.25356.78010
+	git.rickiekarp.net/rickie/goutilkit v1.26038.67690
+	git.rickiekarp.net/rickie/nexuscore v1.26031.56093
+	git.rickiekarp.net/rickie/nexusform v1.26038.66226
 	github.com/sirupsen/logrus v1.9.3
 	gopkg.in/yaml.v2 v2.2.4
 )

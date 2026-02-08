@@ -29,7 +29,7 @@ func sendFileEvent(fileEvent nexusform.FileListEntry) {
 
 	eventMessage := nexusform.HubQueueEventMessage{
 		Event:   nexusform.FilestoreAdd,
-		Payload: string(fileEventPayloadBytes),
+		Payload: fileEventPayloadBytes,
 	}
 
 	jsonData, err := json.Marshal(eventMessage)
