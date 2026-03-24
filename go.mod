@@ -1,6 +1,6 @@
 module git.rickiekarp.net/rickie/tree2yaml
 
-go 1.25.5
+go 1.26.1
 
 require (
 	git.rickiekarp.net/rickie/goutilkit v1.26038.67690
