@@ -7,9 +7,9 @@ import (
 	"log"
 	"net/http"
 
-	"git.rickiekarp.net/rickie/nexuscore"
-	"git.rickiekarp.net/rickie/nexusform"
+	"git.rickiekarp.net/rickie/gomain"
 	"git.rickiekarp.net/rickie/tree2yaml/model"
+	"git.rickiekarp.net/rickie/yubase"
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,16 +19,17 @@ var FlagFileCategory = flag.Int("eventFileCategory", 0, "category of the file")
 var EventSenderProtocol = "http"        // Version set during go build using ldflags
 var EventTargetHost = "localhost:12000" // Version set during go build using ldflags
 
-func sendFileEvent(fileEvent nexusform.FileListEntry) {
-	url := EventSenderProtocol + "://" + EventTargetHost + nexuscore.ApiHubQueuePush
+func sendFileEvent(fileEvent yubase.FileListEntry) {
+	url := EventSenderProtocol + "://" + EventTargetHost + yubase.ApiHubQueuePush
 
 	fileEventPayloadBytes, err := json.Marshal(fileEvent)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	eventMessage := nexusform.HubQueueEventMessage{
-		Event:   nexusform.FilestoreAdd,
+	eventMessage := yubase.HubQueueEventMessage{
+		Id:      gomain.NewUUIDv4(),
+		Event:   yubase.FilestoreAdd,
 		Payload: fileEventPayloadBytes,
 	}
 
@@ -50,7 +51,7 @@ func SendEventForFile(file model.File, processId *int64) {
 	if *FlagEventsEnabled {
 
 		// prepare and send FileStorage event message
-		event := nexusform.FileListEntry{
+		event := yubase.FileListEntry{
 			Path:      file.Path,
 			Name:      file.Name,
 			Size:      file.Size,

@@ -7,15 +7,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"git.rickiekarp.net/rickie/nexusform"
 	"git.rickiekarp.net/rickie/tree2yaml/eventsender"
+	"git.rickiekarp.net/rickie/yubase"
 	"github.com/sirupsen/logrus"
 )
 
 func SendPreferenceUpdate(processId int64) {
 	url := eventsender.EventSenderProtocol + "://" + eventsender.EventTargetHost + "/storage/v1/preferences"
 
-	preferenceData := nexusform.StoragePreference{
+	preferenceData := yubase.StoragePreference{
 		Property: "activelist",
 		Value:    strconv.FormatInt(processId, 10),
 	}
