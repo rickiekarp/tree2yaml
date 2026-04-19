@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	git.rickiekarp.net/rickie/gomain v1.26086.81942
-	git.rickiekarp.net/rickie/yubase v1.26086.81922
+	git.rickiekarp.net/rickie/yubase v1.26109.67762
 	github.com/sirupsen/logrus v1.9.3
 	gopkg.in/yaml.v2 v2.2.4
 )

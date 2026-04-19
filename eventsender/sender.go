@@ -27,10 +27,13 @@ func sendFileEvent(fileEvent yubase.FileListEntry) {
 		log.Fatal(err)
 	}
 
-	eventMessage := yubase.HubQueueEventMessage{
-		Id:      gomain.NewUUIDv4(),
-		Event:   yubase.FilestoreAdd,
-		Payload: fileEventPayloadBytes,
+	eventMessage := yubase.YuQueueEventMessage{
+		Id:    gomain.NewUUIDv4(),
+		Event: yubase.FilestoreAdd,
+		Payload: yubase.YuMessagePayload{
+			Body:     fileEventPayloadBytes,
+			Encoding: "base64",
+		},
 	}
 
 	jsonData, err := json.Marshal(eventMessage)
