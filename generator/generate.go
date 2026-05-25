@@ -23,6 +23,7 @@ var Version = "development" // Version set during go build using ldflags
 var flagOutFile = flag.String("outfile", "", "path of the output file")
 var flagLoadFromFile = flag.Bool("infile", false, "load a file list file")
 var flagProcessId = flag.Int("processid", 0, "processId to assign to the generated filelist")
+var flagPreserveFileEventRootDir = flag.Bool("preserveFileEventRootDir", false, "root directory to preserve in file events")
 
 func Generate(filePath string) {
 
@@ -103,6 +104,11 @@ func buildTree(rootDir string) *model.FileTree {
 			// the filePath will be empty if a file is present in the root working directory
 			if finalPath == "" {
 				finalPath = path.Dir(filePath)
+			} else {
+				if *flagPreserveFileEventRootDir {
+					// prepend the base name of rootDir so the root folder is preserved in the final path
+					finalPath = path.Join(path.Base(rootDir), finalPath)
+				}
 			}
 
 			var fileToAdd = &model.File{
