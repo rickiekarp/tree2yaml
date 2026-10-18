@@ -29,5 +29,6 @@ deployTree2Yaml:
 clean:
 	rm -rf build
 
-tests:
+.PHONY: test
+test:
 	$(GOTEST) -v ./...
